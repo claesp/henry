@@ -224,9 +224,14 @@ func readHenryFileData(file *HenryFile) error {
 }
 
 func readHenryFileMetadata(file *HenryFile) error {
+	var metadata HenryFileMetadata
+
 	if len(file.Data) == 0 {
 		return nil
 	}
+
+	file.HasMetadata = false
+	file.Metadata = &metadata
 
 	hdr := string(file.Data[0:3])
 	if hdr != "---" {
@@ -235,7 +240,6 @@ func readHenryFileMetadata(file *HenryFile) error {
 	}
 
 	headerParts := strings.Split(string(file.Data), "---")
-	var metadata HenryFileMetadata
 	if _, err := toml.Decode(headerParts[1], &metadata); err != nil {
 		return errors.New(fmt.Sprintf("error parsing metadata in '%s': %s", file.Name, err))
 	}
