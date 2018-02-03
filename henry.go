@@ -190,7 +190,7 @@ func findHenryFiles(rootPath string) ([]*HenryFile, error) {
 func main() {
 	fmt.Printf("%s v.0.1\n", os.Args[0])
 
-	rootPath := "/Users/claes/go/src/github.com/claesp/henry/data/"
+	rootPath := "/home/claes/go/src/github.com/claesp/henry/data/"
 	henryFiles, err := findHenryFiles(rootPath)
 	if err != nil {
 		panic(err)
@@ -240,6 +240,10 @@ func readHenryFileMetadata(file *HenryFile) error {
 	}
 
 	headerParts := strings.Split(string(file.Data), "---")
+	if len(headerParts) < 3 {
+		return errors.New(fmt.Sprintf("error parsing metadata in '%s': missing closing tag", file.Name))
+	}
+
 	if _, err := toml.Decode(headerParts[1], &metadata); err != nil {
 		return errors.New(fmt.Sprintf("error parsing metadata in '%s': %s", file.Name, err))
 	}
